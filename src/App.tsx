@@ -1,16 +1,26 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import DashboardPage from './pages/DashboardPage';
 import NotFound from './pages/NotFound';
-import UserDashboard from './components/UserDashboard'; // Giả sử tạm thời import từ thư mục cũ để đỡ phải code lại
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Trang chủ: / */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<UserDashboard esims={[]} />} />
-        {/* Route bắt tất cả các đường dẫn sai -> Hiển thị 404 */}
+        
+        {/* Trang danh sách gói theo quốc gia */}
+        {/* <Route path="/destination/:country" element={<CountryPage />} /> */}
+        
+        {/* Trang thanh toán */}
+        {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
+
+        {/* Khu vực quản lý khách hàng */}
+        <Route path="/my-esims" element={<DashboardPage />} />
+
+        {/* Trang 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

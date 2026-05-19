@@ -2,8 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Các hiệu ứng nền hoặc CSS tùy chỉnh thêm nếu cần */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ====== Design Tokens ====== */
+:root {
+  --primary: #4f46e5;        /* indigo-600 */
+  --primary-hover: #4338ca;  /* indigo-700 */
+  --primary-light: #eef2ff;  /* indigo-50 */
+  --accent: #6366f1;
+  --text-dark: #111827;
+  --text-muted: #6b7280;
+  --bg-page: #f8f9fa;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-dark);
+  background: #fff;
 }
+
+/* ====== Scrollbar ====== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #6366f1; }
