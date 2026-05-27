@@ -67,3 +67,30 @@ export interface EsimProfile {
   created_at: string;
   updated_at: string;
 }
+
+// ==========================================
+// ADMIN & ENTERPRISE RBAC SYSTEM
+// ==========================================
+
+export type UserRole = 'SUPER_ADMIN' | 'FINANCE' | 'SUPPORT';
+
+export interface AdminProfile {
+  id: string; // references auth.users(id)
+  full_name: string;
+  role: UserRole;
+  is_active: boolean;
+  created_at: string;
+}
+
+// AUDIT LOGS (Tự động ghi lại bằng Trigger PostgreSQL)
+export interface AuditLog {
+  id: string;
+  admin_id: string;
+  action_type: string; // VD: 'REFUND_ORDER', 'UPDATE_PRICE'
+  table_name: string;
+  record_id: string;
+  old_data: any;
+  new_data: any;
+  ip_address: string;
+  created_at: string;
+}

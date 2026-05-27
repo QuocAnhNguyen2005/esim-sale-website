@@ -1,156 +1,79 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IconDashboard, IconOrder, IconUsers, IconPackage } from './AdminIcons';
+import AdminDashboardView from './AdminDashboardView';
+import AdminOrderView from './AdminOrderView';
+import AdminCustomerView from './AdminCustomerView';
+import AdminCatalogView from './AdminCatalogView';
 
-// MOCK DATA FOR CRM & OPERATIONS
-const MOCK_SALES_DATA = [
-  { country: 'Nhật Bản', value: 85, color: '#FF4B4B' },
-  { country: 'Thái Lan', value: 65, color: '#3B82F6' },
-  { country: 'Châu Âu', value: 45, color: '#10B981' },
-  { country: 'Hàn Quốc', value: 30, color: '#F59E0B' },
-  { country: 'Singapore', value: 20, color: '#8B5CF6' }
-];
-
-const MOCK_CUSTOMERS = [
-  { id: 'CUST-001', name: 'Nguyễn Quốc Anh', email: 'quoc***@email.com', phone: '+84 987 *** 123', totalSpent: '$150.00', status: 'Active' },
-  { id: 'CUST-002', name: 'Trần Văn B', email: 'tran***@email.com', phone: '+84 912 *** 456', totalSpent: '$45.00', status: 'Active' },
-  { id: 'CUST-003', name: 'Lê Thị C', email: 'leth***@email.com', phone: '+84 903 *** 789', totalSpent: '$320.00', status: 'Blocked' }
-];
+type Tab = 'dashboard' | 'orders' | 'crm' | 'catalog';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'crm'>('dashboard');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const navigate = useNavigate();
+
+  // MOCK ROLE (In real app, this comes from token/DB)
+  const userRole = 'SUPER_ADMIN'; 
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     navigate('/');
   };
 
-  const handleRevoke = (id: string) => {
-    alert(`Đang gọi API thu hồi eSIM của khách hàng ${id} và hoàn tiền (Refund)...`);
-  };
+  const navItems: { id: Tab, label: string, icon: any, roles: string[] }[] = [
+    { id: 'dashboard', label: 'Analytics', icon: IconDashboard, roles: ['SUPER_ADMIN'] },
+    { id: 'orders', label: 'Orders & Reconcile', icon: IconOrder, roles: ['SUPER_ADMIN', 'FINANCE', 'SUPPORT'] },
+    { id: 'crm', label: 'CRM (360 View)', icon: IconUsers, roles: ['SUPER_ADMIN', 'SUPPORT'] },
+    { id: 'catalog', label: 'Products & Vendor', icon: IconPackage, roles: ['SUPER_ADMIN'] },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Admin Topbar */}
-      <header className="bg-indigo-900 text-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="font-black text-xl tracking-tight">Global<span className="text-indigo-400">eSIM</span> Admin</div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-indigo-200">Admin_Super</span>
-            <button onClick={handleLogout} className="text-sm px-4 py-1.5 bg-indigo-800 hover:bg-indigo-700 rounded-lg font-bold transition-colors">
-              Đăng xuất
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-[#09090b] text-white flex flex-col hidden md:flex shrink-0">
+        <div className="h-16 flex items-center px-6 border-b border-gray-800">
+          <div className="font-black text-xl tracking-tight">Global<span className="text-indigo-500">eSIM</span><span className="ml-1 text-[10px] align-top text-gray-400 font-mono">B2B</span></div>
+        </div>
+        <div className="p-4 flex-1 space-y-1">
+          {navItems.filter(item => item.roles.includes(userRole)).map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === item.id ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
+            >
+              <item.icon className="w-5 h-5" />
+              {item.label}
             </button>
-          </div>
+          ))}
         </div>
-      </header>
-      <main className="flex-grow max-w-6xl mx-auto px-4 py-8 md:py-12 w-full">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Portal</h1>
-            <p className="text-gray-500">Quản trị vận hành & Chăm sóc khách hàng</p>
+        <div className="p-4 border-t border-gray-800">
+          <div className="flex items-center gap-3 mb-4 px-2">
+            <div className="w-8 h-8 rounded bg-indigo-900 text-indigo-300 flex items-center justify-center font-bold text-xs">SA</div>
+            <div>
+              <p className="text-sm font-bold text-white">Super Admin</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">{userRole}</p>
+            </div>
           </div>
-          <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-200 flex">
-            <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'dashboard' ? 'bg-[var(--primary)] text-white' : 'text-gray-600 hover:bg-gray-50'}`}>Dashboard</button>
-            <button onClick={() => setActiveTab('crm')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'crm' ? 'bg-[var(--primary)] text-white' : 'text-gray-600 hover:bg-gray-50'}`}>CRM & Khách hàng</button>
-          </div>
+          <button onClick={handleLogout} className="w-full text-left px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
+            Đăng xuất
+          </button>
         </div>
+      </aside>
 
-        {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                <p className="text-sm text-gray-500 font-semibold mb-1">Tổng Doanh Thu</p>
-                <p className="text-3xl font-bold text-gray-900">$24,500.00</p>
-                <p className="text-xs text-green-600 font-bold mt-2">+12.5% so với tháng trước</p>
-              </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                <p className="text-sm text-gray-500 font-semibold mb-1">eSIM Đã Bán</p>
-                <p className="text-3xl font-bold text-gray-900">1,245</p>
-                <p className="text-xs text-green-600 font-bold mt-2">+8.2% so với tháng trước</p>
-              </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                <p className="text-sm text-gray-500 font-semibold mb-1">Tỷ lệ khách quay lại</p>
-                <p className="text-3xl font-bold text-gray-900">42%</p>
-                <p className="text-xs text-gray-500 font-bold mt-2">Ổn định</p>
-              </div>
-            </div>
+      {/* MAIN CONTENT */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Mobile Header */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:hidden shrink-0">
+          <div className="font-black text-lg">Admin Portal</div>
+          <button onClick={handleLogout} className="text-sm font-bold text-gray-600">Đăng xuất</button>
+        </header>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-              <h3 className="font-bold text-gray-900 mb-6">Top Quốc Gia Bán Chạy (Mock SVG Chart)</h3>
-              <div className="space-y-4">
-                {MOCK_SALES_DATA.map(data => (
-                  <div key={data.country} className="flex items-center gap-4">
-                    <div className="w-24 text-sm font-medium text-gray-700">{data.country}</div>
-                    <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${data.value}%`, backgroundColor: data.color }}></div>
-                    </div>
-                    <div className="w-12 text-right text-sm font-bold text-gray-900">{data.value}%</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'crm' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row gap-4 justify-between items-center bg-gray-50">
-              <h3 className="font-bold text-gray-900">Quản lý Khách hàng</h3>
-              <div className="relative w-full md:w-96">
-                <input 
-                  type="text" 
-                  placeholder="Nhập UID, Email hoặc SĐT..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-                />
-                <svg className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-white border-b border-gray-200 text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                    <th className="p-4">UID / Khách hàng</th>
-                    <th className="p-4">Liên hệ (Masked)</th>
-                    <th className="p-4">Tổng chi tiêu</th>
-                    <th className="p-4">Trạng thái</th>
-                    <th className="p-4 text-right">Hành động (CSKH)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.id.toLowerCase().includes(searchQuery.toLowerCase())).map(customer => (
-                    <tr key={customer.id} className="hover:bg-gray-50">
-                      <td className="p-4">
-                        <div className="font-bold text-gray-900">{customer.name}</div>
-                        <div className="text-xs text-gray-500 font-mono">{customer.id}</div>
-                      </td>
-                      <td className="p-4 text-sm text-gray-600">
-                        <div>{customer.email}</div>
-                        <div>{customer.phone}</div>
-                      </td>
-                      <td className="p-4 font-bold text-gray-900">{customer.totalSpent}</td>
-                      <td className="p-4">
-                        <span className={`inline-flex px-2 py-1 rounded-md text-xs font-bold ${customer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {customer.status}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right space-x-2">
-                        <button className="px-3 py-1.5 text-xs font-bold bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                          Lịch sử
-                        </button>
-                        <button onClick={() => handleRevoke(customer.id)} className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 rounded-lg hover:bg-red-100">
-                          Revoke & Refund
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+          {activeTab === 'dashboard' && <AdminDashboardView />}
+          {activeTab === 'orders' && <AdminOrderView />}
+          {activeTab === 'crm' && <AdminCustomerView />}
+          {activeTab === 'catalog' && <AdminCatalogView />}
+        </div>
       </main>
     </div>
   );
