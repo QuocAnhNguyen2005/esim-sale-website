@@ -22,6 +22,12 @@ export interface Product {
 
 export type OrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'PROVISIONING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
 
+/*
+  DATABASE OPTIMIZATION NOTE:
+  - Table "orders": You should create an INDEX on "created_at" column to optimize
+    the History Page filters and Admin Dashboard queries.
+    SQL: CREATE INDEX idx_orders_created_at ON orders(created_at);
+*/
 export interface Order {
   id: string;
   user_id: string;
@@ -42,6 +48,12 @@ export interface OrderItem {
 
 export type EsimStatus = 'AVAILABLE' | 'RESERVED' | 'ASSIGNED' | 'ACTIVATED' | 'EXPIRED';
 
+/*
+  DATABASE OPTIMIZATION NOTE:
+  - Table "esim_profiles": You should create an INDEX on "status" column 
+    since it's frequently used for filtering in Dashboard/My eSIMs.
+    SQL: CREATE INDEX idx_esim_profiles_status ON esim_profiles(status);
+*/
 export interface EsimProfile {
   id: string;
   vendor_id: string;

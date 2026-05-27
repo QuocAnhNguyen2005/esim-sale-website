@@ -2,21 +2,54 @@ import React, { useState } from 'react';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 
-const MOCK_ORDERS = [
-  { id: 'ORD-2026-X7Y', date: '2026-05-20', package: 'Nhật Bản 5GB 7 Ngày', total: '$12.00', status: 'Thành công' },
-  { id: 'ORD-2026-A2B', date: '2026-04-15', package: 'Thái Lan Không Giới Hạn', total: '$19.00', status: 'Thành công' },
-  { id: 'ORD-2026-M9Q', date: '2026-05-25', package: 'Châu Âu 10GB 30 Ngày', total: '$35.00', status: 'Đang xử lý' },
-];
+// MOCK DATA GENERATION FOR PAGINATION
+const generateMockOrders = (count: number) => {
+  const packages = ['Nhật Bản 5GB 7 Ngày', 'Thái Lan Không Giới Hạn', 'Châu Âu 10GB 30 Ngày', 'Singapore 3GB 5 Ngày', 'Trung Quốc 10GB 10 Ngày'];
+  const statuses = ['Thành công', 'Đang xử lý', 'Thất bại'];
+  return Array.from({ length: count }).map((_, i) => ({
+    id: `ORD-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+    date: new Date(Date.now() - Math.random() * 10000000000).toISOString().split('T')[0],
+    package: packages[Math.floor(Math.random() * packages.length)],
+    total: `$${(Math.random() * 50 + 5).toFixed(2)}`,
+    status: statuses[Math.floor(Math.random() * statuses.length)],
+    email: 'quocanhnguyen@email.com',
+    phone: '+84987654321'
+  }));
+};
+
+const MOCK_ORDERS = generateMockOrders(35); // 35 items to test pagination
+
+// DATA MASKING UTILS
+const maskEmail = (email: string) => {
+  const [name, domain] = email.split('@');
+  if (!name || !domain) return email;
+  return `${name.substring(0, 4)}***@${domain}`;
+};
+
+const maskPhone = (phone: string) => {
+  if (phone.length < 8) return phone;
+  return `${phone.substring(0, 3)} *** *** ${phone.substring(phone.length - 3)}`;
+};
 
 export default function HistoryPage() {
   const [filter, setFilter] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(10); // LAZY LOADING & PAGINATION
+  const [loading, setLoading] = useState(false);
 
   const handleDownloadPDF = (id: string) => {
-    alert(`Đang tải hóa đơn PDF cho đơn hàng ${id}...\n(Tính năng tạo PDF có thể dùng jspdf hoặc react-pdf)`);
+    alert(`Đang tải hóa đơn PDF cho đơn hàng ${id}...`);
   };
 
   const handleReorder = (pkg: string) => {
     alert(`Đã thêm gói "${pkg}" vào giỏ hàng. Chuyển hướng thanh toán...`);
+  };
+
+  const loadMore = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setVisibleCount(prev => prev + 10);
+      setLoading(false);
+    }, 800); // Giả lập độ trễ mạng
   };
 
   const filteredOrders = MOCK_ORDERS.filter(o => {
@@ -25,6 +58,8 @@ export default function HistoryPage() {
     if (filter === 'processing') return o.status === 'Đang xử lý';
     return true;
   });
+
+  const displayedOrders = filteredOrders.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -35,9 +70,9 @@ export default function HistoryPage() {
 
         {/* Filters */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-          <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === 'all' ? 'bg-[var(--primary)] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>Tất cả</button>
-          <button onClick={() => setFilter('success')} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === 'success' ? 'bg-[var(--primary)] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>Thành công</button>
-          <button onClick={() => setFilter('processing')} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === 'processing' ? 'bg-[var(--primary)] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>Đang xử lý</button>
+          <button onClick={() => { setFilter('all'); setVisibleCount(10); }} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === 'all' ? 'bg-[var(--primary)] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>Tất cả</button>
+          <button onClick={() => { setFilter('success'); setVisibleCount(10); }} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === 'success' ? 'bg-[var(--primary)] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>Thành công</button>
+          <button onClick={() => { setFilter('processing'); setVisibleCount(10); }} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === 'processing' ? 'bg-[var(--primary)] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>Đang xử lý</button>
         </div>
 
         {/* Desktop Table View */}
@@ -46,7 +81,7 @@ export default function HistoryPage() {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-600 uppercase tracking-wider">
                 <th className="p-4">Mã Đơn Hàng</th>
-                <th className="p-4">Ngày Mua</th>
+                <th className="p-4">Khách Hàng</th>
                 <th className="p-4">Tên Gói</th>
                 <th className="p-4">Tổng Tiền</th>
                 <th className="p-4">Trạng Thái</th>
@@ -54,14 +89,17 @@ export default function HistoryPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredOrders.map(order => (
+              {displayedOrders.map(order => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4 font-mono text-sm text-gray-900">{order.id}</td>
-                  <td className="p-4 text-sm text-gray-600">{order.date}</td>
+                  <td className="p-4 font-mono text-sm text-gray-900">{order.id}<br/><span className="text-xs text-gray-400">{order.date}</span></td>
+                  <td className="p-4 text-sm text-gray-600">
+                    <div className="font-medium text-gray-800">{maskEmail(order.email)}</div>
+                    <div className="text-xs text-gray-500">{maskPhone(order.phone)}</div>
+                  </td>
                   <td className="p-4 font-medium text-gray-900">{order.package}</td>
                   <td className="p-4 font-bold text-gray-900">{order.total}</td>
                   <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${order.status === 'Thành công' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${order.status === 'Thành công' ? 'bg-green-100 text-green-800' : order.status === 'Đang xử lý' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                       {order.status}
                     </span>
                   </td>
@@ -81,15 +119,19 @@ export default function HistoryPage() {
 
         {/* Mobile Card View */}
         <div className="md:hidden space-y-4">
-          {filteredOrders.map(order => (
+          {displayedOrders.map(order => (
             <div key={order.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
               <div className="flex justify-between items-center mb-3">
                 <span className="font-mono text-xs text-gray-500">{order.id}</span>
-                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${order.status === 'Thành công' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${order.status === 'Thành công' ? 'bg-green-100 text-green-800' : order.status === 'Đang xử lý' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                   {order.status}
                 </span>
               </div>
               <h3 className="font-bold text-gray-900 mb-1">{order.package}</h3>
+              <div className="text-xs text-gray-500 mb-3 bg-gray-50 p-2 rounded-lg">
+                <p>Khách: {maskEmail(order.email)}</p>
+                <p>SĐT: {maskPhone(order.phone)}</p>
+              </div>
               <div className="flex justify-between text-sm text-gray-600 mb-4">
                 <span>{order.date}</span>
                 <span className="font-bold text-gray-900">{order.total}</span>
@@ -106,6 +148,19 @@ export default function HistoryPage() {
             </div>
           ))}
         </div>
+
+        {/* Pagination / Load More */}
+        {visibleCount < filteredOrders.length && (
+          <div className="mt-8 text-center">
+            <button 
+              onClick={loadMore} 
+              disabled={loading}
+              className="px-6 py-3 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Đang tải thêm...' : `Xem thêm (${filteredOrders.length - visibleCount} giao dịch)`}
+            </button>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
