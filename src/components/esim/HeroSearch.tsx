@@ -68,7 +68,7 @@ export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: Hero
           <p className="text-indigo-500 font-semibold tracking-widest text-sm uppercase mb-3">ESIM QUỐC TẾ</p>
           <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-black text-gray-900 leading-tight mb-5">
             Kết nối{' '}
-            <span className="text-indigo-600">mọi lúc mọi nơi</span>
+            <span className="text-[var(--primary)]">mọi lúc mọi nơi</span>
             <br />với mức giá phải chăng
           </h1>
           <p className="text-gray-500 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
@@ -167,7 +167,7 @@ export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: Hero
               onClick={() => handleTabClick(t.key)}
               className={`px-7 py-5 text-sm font-semibold transition-all border-b-[3px] ${
                 activeTab === t.key
-                  ? 'border-indigo-600 text-indigo-600 bg-indigo-50/50'
+                  ? 'border-[var(--primary)] text-[var(--primary)] bg-indigo-50/50'
                   : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-200'
               }`}
             >
