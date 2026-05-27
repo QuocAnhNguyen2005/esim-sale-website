@@ -4,8 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev:client": "vite --config vite.config.ts",
+    "dev:admin": "vite --config vite.admin.config.ts",
+    "dev": "node start.mjs",
+    "build:client": "tsc && vite build --config vite.config.ts",
+    "build:admin": "tsc && vite build --config vite.admin.config.ts",
+    "build": "npm run build:client && npm run build:admin",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
