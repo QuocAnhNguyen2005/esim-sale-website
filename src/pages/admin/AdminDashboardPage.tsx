@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../../components/common/Header';
-import Footer from '../../components/common/Footer';
+import { useNavigate } from 'react-router-dom';
 
 // MOCK DATA FOR CRM & OPERATIONS
 const MOCK_SALES_DATA = [
@@ -20,6 +19,12 @@ const MOCK_CUSTOMERS = [
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'crm'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    navigate('/');
+  };
 
   const handleRevoke = (id: string) => {
     alert(`Đang gọi API thu hồi eSIM của khách hàng ${id} và hoàn tiền (Refund)...`);
@@ -27,7 +32,18 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
+      {/* Admin Topbar */}
+      <header className="bg-indigo-900 text-white shadow-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="font-black text-xl tracking-tight">Global<span className="text-indigo-400">eSIM</span> Admin</div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-indigo-200">Admin_Super</span>
+            <button onClick={handleLogout} className="text-sm px-4 py-1.5 bg-indigo-800 hover:bg-indigo-700 rounded-lg font-bold transition-colors">
+              Đăng xuất
+            </button>
+          </div>
+        </div>
+      </header>
       <main className="flex-grow max-w-6xl mx-auto px-4 py-8 md:py-12 w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
@@ -136,7 +152,6 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </main>
-      <Footer />
     </div>
   );
 }

@@ -11,7 +11,6 @@ import SettingsPage from './pages/SettingsPage';
 import ProfileMobilePage from './pages/ProfileMobilePage';
 import CountryDetailPage from './pages/CountryDetailPage';
 import FloatingDeviceChecker from './components/common/FloatingDeviceChecker';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 
 function CoBrandingWrapper({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -54,9 +53,6 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfileMobilePage />} />
         </Route>
-
-        {/* Admin Portal */}
-        <Route path="/admin" element={<AdminDashboardPage />} />
 
         {/* Trang 404 */}
         <Route path="*" element={<NotFound />} />
