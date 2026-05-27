@@ -9,8 +9,12 @@ const allCountries = [
   'Châu Âu', 'Châu Á', 'Toàn Cầu',
 ];
 
-export default function HeroSearch() {
-  const [activeTab, setActiveTab] = useState<Tab>('quoc-gia');
+interface HeroSearchProps {
+  activeTab?: 'quoc-gia' | 'khu-vuc';
+  onTabChange?: (tab: 'quoc-gia' | 'khu-vuc') => void;
+}
+
+export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: HeroSearchProps) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -26,14 +30,22 @@ export default function HeroSearch() {
         setSuggestions([]);
         setShowDropdown(false);
       }
-    }, 250);
+    }, 500); // 500ms debounce
     return () => clearTimeout(t);
   }, [query]);
 
   const handleSelect = (name: string) => {
-    navigate(`/destination/${name.toLowerCase().replace(/\s+/g, '-')}`);
+    navigate(`/destination/${name.toLowerCase().replace(/\\s+/g, '-')}`);
     setQuery('');
     setShowDropdown(false);
+  };
+
+  const handleTabClick = (key: Tab) => {
+    if (key === 'viet-nam') {
+      navigate('/destination/vietnam');
+    } else if (onTabChange) {
+      onTabChange(key as 'quoc-gia' | 'khu-vuc');
+    }
   };
 
   const tabs: { key: Tab; label: string }[] = [
@@ -125,7 +137,7 @@ export default function HeroSearch() {
           {tabs.map(t => (
             <button
               key={t.key}
-              onClick={() => setActiveTab(t.key)}
+              onClick={() => handleTabClick(t.key)}
               className={`px-7 py-5 text-sm font-semibold transition-all border-b-[3px] ${
                 activeTab === t.key
                   ? 'border-indigo-600 text-indigo-600 bg-indigo-50/50'

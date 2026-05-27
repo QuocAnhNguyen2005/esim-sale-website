@@ -19,19 +19,23 @@ export default function Header() {
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-7 font-medium text-sm text-gray-700">
           <Link to="/" className="hover:text-indigo-600 transition-colors">Điểm Đến</Link>
-          <a href="#" className="hover:text-indigo-600 transition-colors">Thiết bị tương thích</a>
-          <a href="#" className="hover:text-indigo-600 transition-colors">Cách kích hoạt</a>
-          <a href="#" className="hover:text-indigo-600 transition-colors">Câu hỏi thường gặp</a>
-          <a href="#" className="hover:text-indigo-600 transition-colors">Đánh giá</a>
+          <Link to="/#devices" className="hover:text-indigo-600 transition-colors">Thiết bị tương thích</Link>
+          <Link to="/#activation" className="hover:text-indigo-600 transition-colors">Cách kích hoạt</Link>
+          <Link to="/#faq" className="hover:text-indigo-600 transition-colors">Câu hỏi thường gặp</Link>
+          <Link to="/#reviews" className="hover:text-indigo-600 transition-colors">Đánh giá</Link>
         </nav>
 
         {/* Right Actions */}
         <div className="flex items-center gap-4 shrink-0">
           <div className="hidden md:flex items-center gap-2">
-            <Link to="/my-esims" className="text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors">Đăng nhập</Link>
+            <Link to="/login" className="text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors">Đăng nhập</Link>
             <span className="text-gray-300">|</span>
-            <Link to="/" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">Đăng ký</Link>
+            <Link to="/register" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">Đăng ký</Link>
           </div>
+          {/* Logout button displayed when token exists */}
+          {typeof window !== 'undefined' && localStorage.getItem('authToken') && (
+            <button onClick={() => { localStorage.removeItem('authToken'); window.location.href = '/'; }} className="ml-4 text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors">Đăng xuất</button>
+          )}
           <button className="hidden md:flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 transition-colors font-medium">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
             VI

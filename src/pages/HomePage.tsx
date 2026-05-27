@@ -46,25 +46,28 @@ const reviews = [
 
 /* ── Reusable row item ── */
 const RowItem = ({ name, icon }: { name: string; icon: string }) => (
-  <button className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.07)] hover:shadow-[0_2px_14px_rgba(79,70,229,0.15)] hover:border-indigo-200 border border-gray-100 transition-all group">
+  <button className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.07)] hover:shadow-lg hover:-translate-y-1 hover:border-indigo-200 border border-gray-100 transition-all duration-300 group">
     <div className="flex items-center gap-3">
       <span className="text-2xl leading-none">{icon}</span>
       <span className="font-semibold text-gray-800 text-sm group-hover:text-indigo-700 transition-colors">{name}</span>
     </div>
-    <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+    <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
   </button>
 );
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = React.useState<'quoc-gia' | 'khu-vuc'>('quoc-gia');
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
       <main className="flex-grow">
 
         {/* HERO */}
-        <HeroSearch />
+        <HeroSearch activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* ── Điểm đến phổ biến ── */}
+        {activeTab === 'quoc-gia' && (
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10">
@@ -81,8 +84,10 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ── eSIM Châu lục ── */}
+        {activeTab === 'khu-vuc' && (
         <section className="py-20 bg-[#f8f9fa]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10">
@@ -99,6 +104,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ── Hướng dẫn 3 bước ── */}
         <section className="py-20 bg-white">
@@ -109,44 +115,48 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Step 1 */}
-              <div className="bg-[#f8f9fa] rounded-3xl p-8 flex flex-col">
+              <div className="bg-[#f8f9fa] rounded-3xl p-8 flex flex-col relative group">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Bước 1</span>
-                <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm mb-8 flex flex-col gap-3 justify-center">
-                  <div className="h-9 rounded-full border-2 border-gray-200 flex items-center px-4 gap-3">
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300"></div>
-                    <span className="text-sm text-gray-500">1 GB</span>
+                <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm mb-8 flex flex-col gap-4 justify-center relative z-10">
+                  <div className="h-12 rounded-full border-2 border-gray-200 flex items-center px-5 gap-4">
+                    <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                    <span className="text-base text-gray-500">1 GB</span>
                   </div>
-                  <div className="h-10 rounded-full bg-indigo-600 flex items-center px-4 gap-3 shadow-md">
-                    <div className="w-3.5 h-3.5 rounded-full bg-white"></div>
-                    <span className="text-sm font-bold text-white">5 GB</span>
+                  <div className="h-14 rounded-full bg-indigo-600 flex items-center px-5 gap-4 shadow-md">
+                    <div className="w-5 h-5 rounded-full bg-white"></div>
+                    <span className="text-base font-bold text-white">5 GB</span>
                   </div>
-                  <div className="h-9 rounded-full border-2 border-gray-200 flex items-center px-4 gap-3">
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300"></div>
-                    <span className="text-sm text-gray-500">10 GB</span>
+                  <div className="h-12 rounded-full border-2 border-gray-200 flex items-center px-5 gap-4">
+                    <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                    <span className="text-base text-gray-500">10 GB</span>
                   </div>
                 </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">Chọn điểm đến và gói của bạn</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">Chọn điểm đến của bạn và gói cước data phù hợp với bạn</p>
+                {/* Connecting line */}
+                <div className="hidden md:block absolute top-1/2 left-[calc(100%-2rem)] w-[calc(100%+4rem)] border-t-2 border-dashed border-gray-300 z-0 opacity-50" />
               </div>
 
               {/* Step 2 */}
-              <div className="bg-[#f8f9fa] rounded-3xl p-8 flex flex-col">
+              <div className="bg-[#f8f9fa] rounded-3xl p-8 flex flex-col relative group">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Bước 2</span>
-                <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm mb-8 flex items-center justify-center gap-3">
+                <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm mb-8 flex items-center justify-center gap-4 relative z-10">
                   {[1, 2, 3].map(n => (
-                    <div key={n} className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${n === 1 ? 'bg-indigo-600 text-white shadow-lg' : 'border-2 border-gray-200 text-gray-400'}`}>{n}</div>
+                    <div key={n} className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl ${n === 1 ? 'bg-indigo-600 text-white shadow-lg' : 'border-2 border-gray-200 text-gray-400'}`}>{n}</div>
                   ))}
                 </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">Cài đặt eSIM trên thiết bị của bạn</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">Tiến hành cài đặt eSIM theo các bước</p>
+                {/* Connecting line */}
+                <div className="hidden md:block absolute top-1/2 left-[calc(100%-2rem)] w-[calc(100%+4rem)] border-t-2 border-dashed border-gray-300 z-0 opacity-50" />
               </div>
 
               {/* Step 3 */}
-              <div className="bg-[#f8f9fa] rounded-3xl p-8 flex flex-col">
+              <div className="bg-[#f8f9fa] rounded-3xl p-8 flex flex-col relative">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Bước 3</span>
-                <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm mb-8 flex items-center justify-center">
-                  <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center shadow-xl">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm mb-8 flex items-center justify-center relative z-10">
+                  <div className="w-28 h-28 rounded-full bg-indigo-600 flex items-center justify-center shadow-xl">
+                    <svg className="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                   </div>
                 </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">Kích hoạt gói dữ liệu trước khi bắt đầu chuyến đi</h3>
