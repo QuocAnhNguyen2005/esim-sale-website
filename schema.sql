@@ -160,3 +160,58 @@ BEGIN
     RETURNING esim_profiles.qr_code_url, esim_profiles.lpa_string, esim_profiles.iccid;
 END;
 $$ LANGUAGE plpgsql;
+
+-- ==========================================
+-- VÍ HOÀN TIỀN (LOYALTY CASHBACK)
+-- ==========================================
+
+-- Bảng lưu trữ Số dư ví của từng khách hàng
+CREATE TABLE wallets (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    balance NUMERIC(10,2) DEFAULT 0.00 CHECK (balance >= 0),
+    currency VARCHAR(3) DEFAULT 'USD',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Bảng Lịch sử giao dịch ví (Bắt buộc phải có để đối soát)
+CREATE TYPE wallet_tx_type AS ENUM ('CASHBACK', 'PAYMENT', 'REFUND');
+
+CREATE TABLE wallet_transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    wallet_id UUID REFERENCES wallets(id) ON DELETE CASCADE,
+    order_id UUID REFERENCES orders(id),
+    amount NUMERIC(10,2) NOT NULL, -- Số dương là cộng tiền, số âm là trừ tiền
+    type wallet_tx_type NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Trigger cập nhật updated_at cho wallets
+CREATE TRIGGER update_wallets_modtime
+BEFORE UPDATE ON wallets
+FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+-- ==========================================
+-- CHỐNG GIAN LẬN THẺ (FRAUD PREVENTION)
+-- ==========================================
+-- Kiểm tra tốc độ giao dịch (Velocity Check)
+CREATE OR REPLACE FUNCTION check_order_velocity(checking_user_id UUID)
+RETURNS BOOLEAN AS $$
+DECLARE
+    recent_order_count INTEGER;
+BEGIN
+    -- Đếm số đơn hàng user đã tạo trong 15 phút qua
+    SELECT COUNT(*) INTO recent_order_count
+    FROM orders
+    WHERE user_id = checking_user_id 
+      AND created_at >= NOW() - INTERVAL '15 minutes';
+
+    -- Giới hạn tối đa 3 đơn hàng / 15 phút
+    IF recent_order_count >= 3 THEN
+        RETURN FALSE; -- Khóa, báo lỗi gian lận
+    ELSE
+        RETURN TRUE;  -- Hợp lệ, cho phép qua
+    END IF;
+END;
+$$ LANGUAGE plpgsql;

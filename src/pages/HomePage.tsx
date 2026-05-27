@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import HeroSearch from '../components/esim/HeroSearch';
@@ -46,14 +47,14 @@ const reviews = [
 
 /* ── Reusable row item ── */
 const RowItem = ({ name, icon, badge }: { name: string; icon: string; badge?: string }) => (
-  <button className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.07)] hover:shadow-lg hover:-translate-y-1 hover:border-indigo-200 border border-gray-100 transition-all duration-300 group">
+  <Link to={`/destination/${name.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.07)] hover:shadow-lg hover:-translate-y-1 hover:border-indigo-200 border border-gray-100 transition-all duration-300 group">
     <div className="flex items-center gap-3">
       <span className="text-2xl leading-none">{icon}</span>
-      <span className="font-semibold text-gray-800 text-sm group-hover:text-indigo-700 transition-colors">{name}</span>
+      <span className="font-semibold text-gray-800 text-sm group-hover:text-[var(--primary)] transition-colors">{name}</span>
       {badge && <span className="ml-1 px-2 py-0.5 text-[10px] font-bold text-white bg-red-500 rounded-full uppercase tracking-wider">{badge}</span>}
     </div>
-    <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-  </button>
+    <svg className="w-4 h-4 text-gray-400 group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+  </Link>
 );
 
 export default function HomePage() {
@@ -108,7 +109,7 @@ export default function HomePage() {
         )}
 
         {/* ── Hướng dẫn 3 bước ── */}
-        <section className="py-20 bg-white">
+        <section id="activation" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-14">
               <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Làm thế nào để bắt đầu sử dụng eSIM du lịch?</h2>
@@ -187,7 +188,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Reviews ── */}
-        <section className="py-20 bg-white">
+        <section id="reviews" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Hãy xem khách hàng nói gì về chúng tôi</h2>
@@ -214,8 +215,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Lưu ý quan trọng ── */}
-        <section className="py-16 bg-indigo-600">
+        {/* ── Lưu ý quan trọng (Devices & FAQ) ── */}
+        <section id="devices" className="py-16 bg-indigo-600">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl font-extrabold text-white text-center mb-8">Những lưu ý mà bạn nên nhớ</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

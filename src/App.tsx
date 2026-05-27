@@ -5,6 +5,12 @@ import DashboardPage from './pages/DashboardPage';
 import AuthPage from './pages/AuthPage';
 import NotFound from './pages/NotFound';
 import BottomNav from './components/common/BottomNav';
+import ProtectedRoute from './components/ProtectedRoute';
+import HistoryPage from './pages/HistoryPage';
+import SettingsPage from './pages/SettingsPage';
+import ProfileMobilePage from './pages/ProfileMobilePage';
+import CountryDetailPage from './pages/CountryDetailPage';
+import FloatingDeviceChecker from './components/common/FloatingDeviceChecker';
 
 function CoBrandingWrapper({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -38,19 +44,25 @@ function App() {
         <Route path="/register" element={<AuthPage defaultMode="register" />} />
 
         {/* Trang danh sách gói theo quốc gia */}
-        {/* <Route path="/destination/:country" element={<CountryPage />} /> */}
+        <Route path="/destination/:countrySlug" element={<CountryDetailPage />} />
 
         {/* Trang thanh toán */}
         {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
 
-        {/* Khu vực quản lý khách hàng */}
-        <Route path="/my-esims" element={<DashboardPage />} />
+        {/* Khu vực quản lý khách hàng - Yêu cầu Đăng nhập */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/my-esims" element={<DashboardPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/profile" element={<ProfileMobilePage />} />
+        </Route>
 
         {/* Trang 404 */}
         <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
         <BottomNav />
+        <FloatingDeviceChecker />
       </CoBrandingWrapper>
     </BrowserRouter>
   );

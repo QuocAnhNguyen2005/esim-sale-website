@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import AuthModal from './AuthModal';
+import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 
 export default function Header() {
   const [showAuth, setShowAuth] = useState<'login' | 'register' | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   const userName = typeof window !== 'undefined' ? localStorage.getItem('userName') || 'Người dùng' : '';
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(dropdownRef, () => setIsMenuOpen(false));
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -31,11 +35,11 @@ export default function Header() {
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-7 font-medium text-sm text-gray-700">
-          <Link to="/" className="hover:text-indigo-600 transition-colors">Điểm Đến</Link>
-          <Link to="/#devices" className="hover:text-indigo-600 transition-colors">Thiết bị tương thích</Link>
-          <Link to="/#activation" className="hover:text-indigo-600 transition-colors">Cách kích hoạt</Link>
-          <Link to="/#faq" className="hover:text-indigo-600 transition-colors">Câu hỏi thường gặp</Link>
-          <Link to="/#reviews" className="hover:text-indigo-600 transition-colors">Đánh giá</Link>
+          <Link to="/" className="hover:text-[var(--primary)] transition-colors">Điểm Đến</Link>
+          <a href="/#devices" className="hover:text-[var(--primary)] transition-colors">Thiết bị tương thích</a>
+          <a href="/#activation" className="hover:text-[var(--primary)] transition-colors">Cách kích hoạt</a>
+          <a href="/#faq" className="hover:text-[var(--primary)] transition-colors">Câu hỏi thường gặp</a>
+          <a href="/#reviews" className="hover:text-[var(--primary)] transition-colors">Đánh giá</a>
         </nav>
 
         {/* Right Actions */}
@@ -47,25 +51,41 @@ export default function Header() {
               <button onClick={() => setShowAuth('register')} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">Đăng ký</button>
             </div>
           ) : (
-            <div className="relative">
+            <div className="relative hidden md:block" ref={dropdownRef}>
+              {/* Nút bấm hiển thị Avatar */}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors focus:outline-none"
+                className="flex items-center gap-2 hover:bg-gray-100 p-1.5 pr-3 rounded-full transition focus:outline-none"
               >
-                <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 bg-[var(--primary)] rounded-full text-white flex items-center justify-center font-bold">
                   {userName[0]}
                 </div>
-                <span className="hidden md:inline">Hi, {userName}</span>
-                <svg className={`w-4 h-4 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                <span className="font-semibold text-gray-700 text-sm">Hi, {userName}</span>
               </button>
-              
+
+              {/* Bảng Menu Dropdown */}
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                  <Link to="/my-esims" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">eSIM của tôi</Link>
-                  <Link to="/history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Lịch sử giao dịch</Link>
-                  <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Cài đặt tài khoản</Link>
-                  <div className="border-t border-gray-100 my-1"></div>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Đăng xuất</button>
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden transform origin-top-right transition-all">
+                  <div className="p-4 border-b border-gray-100 bg-gray-50">
+                    <p className="text-sm font-medium text-gray-900">{userName}</p>
+                    <p className="text-xs text-gray-500 truncate">quocanh@email.com</p>
+                  </div>
+                  <div className="py-2">
+                    <Link to="/my-esims" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm font-bold text-[var(--primary)] hover:bg-[var(--primary-light)]">
+                      eSIM của tôi
+                    </Link>
+                    <Link to="/history" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Lịch sử giao dịch
+                    </Link>
+                    <Link to="/settings" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Cài đặt tài khoản
+                    </Link>
+                  </div>
+                  <div className="py-2 border-t border-gray-100">
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors">
+                      Đăng xuất
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
