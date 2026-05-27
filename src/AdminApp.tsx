@@ -1,13 +1,14 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 
 // A simple Admin Login Page stub for now
 function AdminLoginPage() {
+  const navigate = useNavigate();
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem('adminToken', 'mock-admin-token');
-    window.location.href = '/admin/dashboard';
+    navigate('/dashboard');
   };
 
   return (
@@ -43,7 +44,7 @@ function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function AdminApp() {
   return (
-    <BrowserRouter basename="/admin">
+    <HashRouter>
       <Routes>
         <Route path="/" element={<AdminLoginPage />} />
         <Route 
@@ -56,6 +57,6 @@ export default function AdminApp() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
