@@ -21,7 +21,37 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 1. Bảng Vendors (Nhà cung cấp eSIM như Airhub, Giga...)
+-- 1. Bảng Users (Khách hàng)
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    full_name VARCHAR(255),
+    support_code VARCHAR(10) UNIQUE, -- VD: CUST-A7X9
+    password_hash TEXT NOT NULL, -- Mã hóa bằng bcrypt/Argon2 (Supabase Auth)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_users_id ON users(id);
+
+CREATE TRIGGER update_users_modtime
+BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+-- Function tự động sinh support_code ngẫu nhiên
+CREATE OR REPLACE FUNCTION generate_support_code()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.support_code IS NULL THEN
+        NEW.support_code := 'CUST-' || upper(substring(md5(random()::text), 1, 6));
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_generate_support_code
+BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE generate_support_code();
+
+-- 2. Bảng Vendors (Nhà cung cấp eSIM như Airhub, Giga...)
 CREATE TABLE vendors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
@@ -35,7 +65,7 @@ CREATE TABLE vendors (
 CREATE TRIGGER update_vendors_modtime
 BEFORE UPDATE ON vendors FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
--- 2. Bảng Products (Các gói cước eSIM)
+-- 3. Bảng Products (Các gói cước eSIM)
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     vendor_id UUID REFERENCES vendors(id) ON DELETE CASCADE,
@@ -52,12 +82,12 @@ CREATE TABLE products (
 CREATE TRIGGER update_products_modtime
 BEFORE UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
--- 3. Bảng Orders (Đơn hàng của khách)
+-- 4. Bảng Orders (Đơn hàng của khách)
 CREATE TYPE order_status AS ENUM ('PENDING_PAYMENT', 'PAID', 'PROVISIONING', 'COMPLETED', 'FAILED', 'REFUNDED');
 
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL, -- Liên kết với bảng Users (VD: auth.users trong Supabase)
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE, -- Liên kết với bảng Users (VD: auth.users trong Supabase)
     total_amount NUMERIC(10,2) NOT NULL CHECK (total_amount >= 0),
     status order_status DEFAULT 'PENDING_PAYMENT',
     payment_intent_id VARCHAR(255), -- ID giao dịch từ cổng thanh toán (Stripe, VNPay)
@@ -68,7 +98,7 @@ CREATE TABLE orders (
 CREATE TRIGGER update_orders_modtime
 BEFORE UPDATE ON orders FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
--- 4. Bảng Order_Items (Chi tiết đơn hàng - hỗ trợ mua nhiều eSIM cùng lúc)
+-- 5. Bảng Order_Items (Chi tiết đơn hàng - hỗ trợ mua nhiều eSIM cùng lúc)
 CREATE TABLE order_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
@@ -77,7 +107,7 @@ CREATE TABLE order_items (
     price_at_purchase NUMERIC(10,2) NOT NULL CHECK (price_at_purchase >= 0)
 );
 
--- 5. Bảng eSIM_Profiles (Kho lưu trữ eSIM thực tế cấp cho khách)
+-- 6. Bảng eSIM_Profiles (Kho lưu trữ eSIM thực tế cấp cho khách)
 CREATE TYPE esim_status AS ENUM ('AVAILABLE', 'RESERVED', 'ASSIGNED', 'ACTIVATED', 'EXPIRED');
 
 CREATE TABLE esim_profiles (
@@ -105,7 +135,7 @@ CREATE INDEX idx_esim_profiles_order_item_id ON esim_profiles(order_item_id);
 CREATE INDEX idx_esim_profiles_iccid ON esim_profiles(iccid);
 CREATE INDEX idx_esim_profiles_status_product ON esim_profiles(status, product_id); -- Tối ưu cho việc tìm eSIM AVAILABLE
 
--- 6. Stored Procedure hỗ trợ cấp phát eSIM an toàn, nhanh chóng và trả về luôn dữ liệu eSIM
+-- 7. Stored Procedure hỗ trợ cấp phát eSIM an toàn, nhanh chóng và trả về luôn dữ liệu eSIM
 CREATE OR REPLACE FUNCTION claim_available_esim(p_product_id UUID, p_order_item_id UUID)
 RETURNS TABLE (
     qr_code_url TEXT,

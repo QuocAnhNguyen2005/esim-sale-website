@@ -1,14 +1,35 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import AuthPage from './pages/AuthPage';
 import NotFound from './pages/NotFound';
+import BottomNav from './components/common/BottomNav';
+
+function CoBrandingWrapper({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const partner = params.get('partner');
+    if (partner === 'vcb') {
+      document.documentElement.style.setProperty('--primary', '#009933'); // VCB Green
+      document.documentElement.style.setProperty('--primary-hover', '#007a29');
+      document.documentElement.style.setProperty('--primary-light', '#e6f5ea');
+      // Set an indicator in localStorage so components can show discount logic
+      localStorage.setItem('partner', 'vcb');
+    }
+  }, [location.search]);
+
+  return <>{children}</>;
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <CoBrandingWrapper>
+        <div className="pb-16 md:pb-0"> {/* padding-bottom for mobile BottomNav */}
+          <Routes>
         {/* Trang chủ */}
         <Route path="/" element={<HomePage />} />
 
@@ -27,7 +48,10 @@ function App() {
 
         {/* Trang 404 */}
         <Route path="*" element={<NotFound />} />
-      </Routes>
+          </Routes>
+        </div>
+        <BottomNav />
+      </CoBrandingWrapper>
     </BrowserRouter>
   );
 }

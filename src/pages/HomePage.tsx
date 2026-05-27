@@ -5,8 +5,8 @@ import HeroSearch from '../components/esim/HeroSearch';
 
 /* ── Data ── */
 const popular = [
-  { name: 'Nhật Bản', flag: '🇯🇵' }, { name: 'Hàn Quốc', flag: '🇰🇷' },
-  { name: 'Thái Lan', flag: '🇹🇭' }, { name: 'Singapore', flag: '🇸🇬' },
+  { name: 'Nhật Bản', flag: '🇯🇵', badge: 'Best Seller' }, { name: 'Hàn Quốc', flag: '🇰🇷' },
+  { name: 'Thái Lan', flag: '🇹🇭', badge: 'Hot' }, { name: 'Singapore', flag: '🇸🇬' },
   { name: 'Mỹ', flag: '🇺🇸' }, { name: 'Anh', flag: '🇬🇧' },
   { name: 'Pháp', flag: '🇫🇷' }, { name: 'Việt Nam', flag: '🇻🇳' },
   { name: 'Hồng Kông', flag: '🇭🇰' }, { name: 'Trung Quốc', flag: '🇨🇳' },
@@ -45,11 +45,12 @@ const reviews = [
 ];
 
 /* ── Reusable row item ── */
-const RowItem = ({ name, icon }: { name: string; icon: string }) => (
+const RowItem = ({ name, icon, badge }: { name: string; icon: string; badge?: string }) => (
   <button className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.07)] hover:shadow-lg hover:-translate-y-1 hover:border-indigo-200 border border-gray-100 transition-all duration-300 group">
     <div className="flex items-center gap-3">
       <span className="text-2xl leading-none">{icon}</span>
       <span className="font-semibold text-gray-800 text-sm group-hover:text-indigo-700 transition-colors">{name}</span>
+      {badge && <span className="ml-1 px-2 py-0.5 text-[10px] font-bold text-white bg-red-500 rounded-full uppercase tracking-wider">{badge}</span>}
     </div>
     <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
   </button>
@@ -75,7 +76,7 @@ export default function HomePage() {
               <p className="text-gray-500">Các eSIM của chúng tôi được tin dùng bởi hàng triệu người trên toàn thế giới</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-              {popular.map((d, i) => <RowItem key={i} name={d.name} icon={d.flag} />)}
+              {popular.map((d, i) => <RowItem key={i} name={d.name} icon={d.flag} badge={d.badge} />)}
             </div>
             <div className="mt-10 text-center">
               <button className="bg-gray-900 hover:bg-gray-700 text-white px-8 py-3.5 rounded-lg font-bold text-sm transition-colors">

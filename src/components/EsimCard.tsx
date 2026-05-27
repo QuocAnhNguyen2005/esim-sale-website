@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Product } from '../types/database';
+import CheckoutModal from './CheckoutModal';
 
 interface EsimCardProps {
   product: Product;
@@ -9,6 +10,7 @@ interface EsimCardProps {
 }
 
 export default function EsimCard({ product, countryName, flagEmoji, onSelect }: EsimCardProps) {
+  const [showCheckout, setShowCheckout] = useState(false);
   const dataLabel = product.data_limit_gb ? `${product.data_limit_gb} GB` : 'Unlimited';
 
   return (
@@ -43,12 +45,20 @@ export default function EsimCard({ product, countryName, flagEmoji, onSelect }: 
           className="bg-gray-900 text-white px-5 py-2.5 rounded-xl font-medium group-hover:bg-indigo-600 transition-colors duration-300"
           onClick={(e) => {
             e.stopPropagation();
-            onSelect(product);
+            setShowCheckout(true);
+            if (onSelect) onSelect(product);
           }}
         >
-          Buy Now
+          Mua ngay
         </button>
       </div>
+
+      {showCheckout && (
+        <CheckoutModal 
+          product={product} 
+          onClose={() => setShowCheckout(false)} 
+        />
+      )}
     </div>
   );
 }

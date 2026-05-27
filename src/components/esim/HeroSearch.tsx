@@ -18,6 +18,7 @@ export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: Hero
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -35,9 +36,10 @@ export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: Hero
   }, [query]);
 
   const handleSelect = (name: string) => {
-    navigate(`/destination/${name.toLowerCase().replace(/\\s+/g, '-')}`);
+    navigate(`/destination/${name.toLowerCase().replace(/\s+/g, '-')}`);
     setQuery('');
     setShowDropdown(false);
+    setIsMobileSearchOpen(false);
   };
 
   const handleTabClick = (key: Tab) => {
@@ -74,8 +76,16 @@ export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: Hero
           </p>
 
           {/* Search bar */}
-          <div className="relative max-w-lg">
-            <div className="flex items-center bg-white rounded-full shadow-lg border border-gray-200 overflow-visible ring-2 ring-transparent focus-within:ring-indigo-300 transition-all">
+          <div className={`relative max-w-lg ${isMobileSearchOpen ? 'fixed inset-0 z-[100] bg-white p-4 h-full w-full max-w-none md:relative md:p-0 md:bg-transparent md:h-auto md:z-auto' : ''}`}>
+            {isMobileSearchOpen && (
+              <div className="flex justify-between items-center mb-4 md:hidden">
+                <h2 className="text-xl font-bold">Tìm kiếm điểm đến</h2>
+                <button onClick={() => setIsMobileSearchOpen(false)} className="p-2 text-gray-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            )}
+            <div className={`flex items-center bg-white rounded-full shadow-lg border border-gray-200 overflow-visible ring-2 ring-transparent focus-within:ring-indigo-300 transition-all ${isMobileSearchOpen ? 'shadow-none border-2 border-indigo-500' : ''}`}>
               <div className="pl-5 text-gray-400 shrink-0">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
@@ -87,19 +97,36 @@ export default function HeroSearch({ activeTab = 'quoc-gia', onTabChange }: Hero
                 type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
+                onFocus={() => {
+                  if (window.innerWidth < 768) setIsMobileSearchOpen(true);
+                }}
                 placeholder="Tìm kiếm gói dữ liệu cho hơn 200 quốc gia..."
                 className="flex-1 px-4 py-4 text-sm text-gray-700 bg-transparent focus:outline-none placeholder-gray-400"
               />
-              <button className="m-1.5 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full transition-colors shrink-0">
+              <button className="m-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white p-3 rounded-full transition-colors shrink-0">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
             </div>
 
+            {/* Quick tags for mobile */}
+            {isMobileSearchOpen && !query && (
+              <div className="mt-6 md:hidden">
+                <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Tìm kiếm phổ biến</h3>
+                <div className="flex flex-wrap gap-2">
+                  {['Nhật Bản', 'Thái Lan', 'Châu Âu', 'Hàn Quốc', 'Singapore'].map(tag => (
+                    <button key={tag} onClick={() => handleSelect(tag)} className="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700 active:bg-gray-200">
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Dropdown suggestions */}
-            {showDropdown && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+            {(showDropdown || isMobileSearchOpen) && suggestions.length > 0 && (
+              <div className={`mt-2 bg-white rounded-2xl border border-gray-100 overflow-hidden z-50 ${isMobileSearchOpen ? 'static shadow-none border-0' : 'absolute top-full left-0 right-0 shadow-xl'}`}>
                 {suggestions.map((s, i) => (
                   <button
                     key={i}
