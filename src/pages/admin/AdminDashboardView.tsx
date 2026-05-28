@@ -1,12 +1,12 @@
 import React from 'react';
-import { IconShieldAlert } from './AdminIcons';
+import { ShieldAlert } from 'lucide-react';
 
 export default function AdminDashboardView() {
   return (
     <div className="space-y-6">
       {/* System Alerts */}
       <div className="bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3">
-        <IconShieldAlert className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+        <ShieldAlert className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
         <div>
           <h4 className="text-red-800 font-bold text-sm">System Alert: Vendor API Balance Low</h4>
           <p className="text-red-700 text-sm mt-1">Số dư API tại đối tác Airhub chỉ còn <strong>$142.50</strong>. Ước tính sẽ hết trong 4 giờ tới. Vui lòng nạp thêm tiền ngay.</p>

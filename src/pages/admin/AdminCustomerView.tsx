@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IconSearch } from './AdminIcons';
+import { Search } from 'lucide-react';
 
 const MOCK_CUSTOMERS = [
   { id: 'CUST-001', name: 'Nguyễn Quốc Anh', email: 'quoc***@email.com', phone: '+84 987 *** 123', totalSpent: '$150.00', status: 'Active', wallet: '$15.00', history: 5 },
@@ -21,7 +21,7 @@ export default function AdminCustomerView() {
       {/* Global Search */}
       <div className="relative max-w-2xl mx-auto">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <IconSearch className="w-6 h-6 text-gray-400" />
+          <Search className="w-6 h-6 text-gray-400" />
         </div>
         <input 
           type="text" 

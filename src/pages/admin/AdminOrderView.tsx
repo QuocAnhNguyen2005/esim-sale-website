@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IconUpload, IconRefresh } from './AdminIcons';
+import { UploadCloud, RefreshCw, AlertCircle, Eye, CreditCard } from 'lucide-react';
 
 const MOCK_ORDERS = [
   { id: 'ORD-A1', status: 'PAID', channel: 'App Ngân hàng', total: '$12.00', date: '2026-05-28' },
@@ -11,23 +11,21 @@ export default function AdminOrderView() {
   const [activeTab, setActiveTab] = useState('all');
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-gray-900">Quản lý Đơn hàng & Đối soát</h2>
-        <button className="flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold text-sm hover:bg-indigo-100">
-          <IconUpload className="w-4 h-4" />
-          Upload Excel (Đối soát)
-        </button>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight">Đơn Hàng & Đối Soát (Order Pipeline)</h2>
+          <p className="text-sm text-gray-500 mt-1">Bảng điều khiển theo dõi luồng trạng thái từ Pending - Paid - Delivered.</p>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="border-b border-gray-100 flex gap-1 p-2">
-          <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-bold rounded-lg ${activeTab === 'all' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}>Tất cả Đơn hàng</button>
-          <button onClick={() => setActiveTab('rescue')} className={`px-4 py-2 text-sm font-bold rounded-lg flex items-center gap-2 ${activeTab === 'rescue' ? 'bg-red-50 text-red-700' : 'text-gray-500 hover:text-red-700'}`}>
-            Cần Xử Lý Gấp (Rescue Flow)
-            <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">1</span>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="border-b border-gray-100 flex flex-wrap gap-1 p-2 bg-gray-50/50">
+          <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${activeTab === 'all' ? 'bg-white shadow-sm text-indigo-600 border border-gray-200' : 'text-gray-500 hover:text-gray-900'}`}>Tất cả Đơn hàng</button>
+          <button onClick={() => setActiveTab('rescue')} className={`px-4 py-2 text-sm font-bold rounded-lg flex items-center gap-2 transition-colors ${activeTab === 'rescue' ? 'bg-red-50 text-red-700 border border-red-100' : 'text-gray-500 hover:text-red-700'}`}>
+            Cần Xử Lý Gấp
+            <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-sm">1</span>
           </button>
-          <button onClick={() => setActiveTab('reconcile')} className={`px-4 py-2 text-sm font-bold rounded-lg ${activeTab === 'reconcile' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}>Lệch Đối soát</button>
         </div>
 
         <div className="p-0 overflow-x-auto">
@@ -57,11 +55,11 @@ export default function AdminOrderView() {
                   <td className="p-4 text-right">
                     {order.status === 'FAILED_API' ? (
                       <div className="flex justify-end gap-2">
-                        <button className="px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded flex items-center gap-1 hover:bg-gray-800"><IconRefresh className="w-3 h-3" /> Retry API</button>
+                        <button className="px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded flex items-center gap-1 hover:bg-gray-800"><RefreshCw className="w-3 h-3" /> Retry API</button>
                         <button className="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded hover:bg-red-100">Refund</button>
                       </div>
                     ) : (
-                      <button className="text-indigo-600 font-semibold hover:underline">Chi tiết</button>
+                      <button className="text-indigo-600 font-semibold hover:underline flex items-center justify-end gap-1"><Eye size={14} /> Chi tiết</button>
                     )}
                   </td>
                 </tr>
