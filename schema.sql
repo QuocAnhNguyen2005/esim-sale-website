@@ -215,3 +215,33 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+-- ==========================================
+-- PHẦN 2: THIẾT KẾ DATABASE CHO KHO ESIM (INVENTORY SCHEMA)
+-- ==========================================
+
+-- 1. Bảng Danh mục Gói cước (Sản phẩm hiển thị lên web)
+CREATE TABLE esim_packages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL, -- VD: Nhật Bản 5GB 7 Ngày
+    country_code VARCHAR(10) NOT NULL, -- VD: JP
+    data_limit VARCHAR(50), -- VD: 5GB
+    duration_days INT NOT NULL,
+    price_vnd NUMERIC(10,2) NOT NULL,
+    vendor_package_id VARCHAR(100), -- Mã gói map với đối tác (VD: AIRHUB-JP-5G)
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. Bảng Kho Mã eSIM (Lô hàng nhập vào)
+CREATE TABLE esim_inventory (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    package_id UUID REFERENCES esim_packages(id) ON DELETE CASCADE,
+    iccid VARCHAR(50) UNIQUE NOT NULL, -- Số seri thẻ sim
+    lpa_code TEXT NOT NULL, -- Chuỗi mã để quét QR (LPA:1$smdp.plus$...)
+    status VARCHAR(20) DEFAULT 'AVAILABLE', -- Trạng thái: AVAILABLE, SOLD, REVOKED
+    imported_batch VARCHAR(100), -- Tên lô hàng (VD: BATCH_MAY_2026)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX idx_esim_status ON esim_inventory(status);
+CREATE INDEX idx_esim_iccid ON esim_inventory(iccid);
