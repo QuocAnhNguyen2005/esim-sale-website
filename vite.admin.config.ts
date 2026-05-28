@@ -17,16 +17,17 @@ const adminFallbackPlugin = () => ({
 });
 
 export default defineConfig({
+  appType: 'mpa', // Tắt SPA fallback mặc định của Vite
   plugins: [react(), adminFallbackPlugin()],
   server: {
-    port: 5174, // Admin chạy port riêng
+    port: 5174,
     strictPort: true,
   },
   build: {
+    outDir: resolve(__dirname, 'dist/admin'),
+    emptyOutDir: true,
     rollupOptions: {
-      input: {
-        admin: resolve(__dirname, 'admin/index.html')
-      }
+      input: resolve(__dirname, 'admin/index.html')
     }
   }
 });
