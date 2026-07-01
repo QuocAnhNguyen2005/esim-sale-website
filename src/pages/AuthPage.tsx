@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 type AuthMode = 'login' | 'register';
@@ -21,13 +21,13 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const switchTab = (tab: AuthMode) => {
+  const switchTab = useCallback((tab: AuthMode) => {
     setMode(tab);
     setError('');
     navigate(tab === 'login' ? '/login' : '/register', { replace: true });
-  };
+  }, [navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (mode === 'register' && password !== confirm) {
@@ -45,7 +45,13 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
         navigate('/login');
       }
     }, 1200);
-  };
+  }, [mode, password, confirm, navigate]);
+
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value), []);
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value), []);
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value), []);
+  const handleConfirmChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setConfirm(e.target.value), []);
+  const handleRememberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setRemember(e.target.checked), []);
 
   return (
     <div className="relative min-h-screen bg-[#f5f5f0] flex flex-col items-center justify-center overflow-hidden px-4">
@@ -127,7 +133,7 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
               type="text"
               placeholder="Nhập họ và tên"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={handleNameChange}
               required
               className="w-full px-4 py-3 rounded-xl bg-[#f5f5f3] border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
             />
@@ -138,7 +144,7 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
             type="email"
             placeholder={mode === 'login' ? 'Email' : 'Nhập email'}
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             required
             className="w-full px-4 py-3 rounded-xl bg-[#f5f5f3] border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
           />
@@ -148,7 +154,7 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
             type="password"
             placeholder={mode === 'login' ? 'Mật khẩu' : 'Nhập mật khẩu'}
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             required
             className="w-full px-4 py-3 rounded-xl bg-[#f5f5f3] border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
           />
@@ -159,7 +165,7 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
               type="password"
               placeholder="Nhập lại mật khẩu"
               value={confirm}
-              onChange={e => setConfirm(e.target.value)}
+              onChange={handleConfirmChange}
               required
               className="w-full px-4 py-3 rounded-xl bg-[#f5f5f3] border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
             />
@@ -172,7 +178,7 @@ export default function AuthPage({ defaultMode }: { defaultMode?: AuthMode }) {
                 <input
                   type="checkbox"
                   checked={remember}
-                  onChange={e => setRemember(e.target.checked)}
+                  onChange={handleRememberChange}
                   className="accent-indigo-600"
                 />
                 Nhớ mật khẩu

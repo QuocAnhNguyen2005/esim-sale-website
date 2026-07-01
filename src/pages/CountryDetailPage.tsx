@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -20,6 +20,22 @@ export default function CountryDetailPage() {
     name: `eSIM ${countryName} ${selectedData} ${selectedDays} Ngày`,
     price: 15.00
   };
+
+  const handleSelectData = useCallback((data: string) => {
+    setSelectedData(data);
+  }, []);
+
+  const handleSelectDays = useCallback((days: string) => {
+    setSelectedDays(days);
+  }, []);
+
+  const handleOpenCheckout = useCallback(() => {
+    setShowCheckout(true);
+  }, []);
+
+  const handleCloseCheckout = useCallback(() => {
+    setShowCheckout(false);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -75,7 +91,7 @@ export default function CountryDetailPage() {
                   {['1GB', '5GB', '10GB', 'Không giới hạn'].map((data) => (
                     <button 
                       key={data}
-                      onClick={() => setSelectedData(data)}
+                      onClick={() => handleSelectData(data)}
                       className={`py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                         selectedData === data ? 'border-[var(--primary)] bg-indigo-50 text-[var(--primary)]' : 'border-gray-100 text-gray-500 hover:border-gray-200 hover:bg-gray-50'
                       } ${data === 'Không giới hạn' ? 'col-span-3' : ''}`}
@@ -93,7 +109,7 @@ export default function CountryDetailPage() {
                   {['3', '5', '7', '15'].map((days) => (
                     <button 
                       key={days}
-                      onClick={() => setSelectedDays(days)}
+                      onClick={() => handleSelectDays(days)}
                       className={`py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                         selectedDays === days ? 'border-[var(--primary)] bg-indigo-50 text-[var(--primary)]' : 'border-gray-100 text-gray-500 hover:border-gray-200 hover:bg-gray-50'
                       }`}
@@ -111,7 +127,7 @@ export default function CountryDetailPage() {
               </div>
               
               <button 
-                onClick={() => setShowCheckout(true)}
+                onClick={handleOpenCheckout}
                 className="w-full bg-[var(--primary)] text-white py-4 rounded-xl font-bold text-lg hover:bg-[var(--primary-hover)] transition-all shadow-lg hover:shadow-indigo-200 active:scale-[0.98]"
               >
                 Mua ngay
@@ -132,7 +148,7 @@ export default function CountryDetailPage() {
               <p className="text-2xl font-extrabold text-[var(--primary)]">${dummyProduct.price.toFixed(2)}</p>
             </div>
             <button 
-              onClick={() => setShowCheckout(true)}
+              onClick={handleOpenCheckout}
               className="bg-[var(--primary)] text-white px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-[var(--primary-hover)] active:scale-95 transition-transform"
             >
               Mua ngay
@@ -146,7 +162,7 @@ export default function CountryDetailPage() {
       {showCheckout && (
         <CheckoutModal 
           product={dummyProduct} 
-          onClose={() => setShowCheckout(false)} 
+          onClose={handleCloseCheckout} 
         />
       )}
     </div>
