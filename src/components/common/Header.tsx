@@ -20,8 +20,8 @@ export default function Header() {
 
   return (
     <>
-    <header className="bg-white dark:bg-gray-900 sticky top-0 z-50 shadow-sm transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[72px] flex items-center justify-between gap-8">
+    <header className="glass sticky top-0 z-50 transition-colors duration-300 border-b border-white/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[76px] flex items-center justify-between gap-8">
         
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 shrink-0">
@@ -34,12 +34,14 @@ export default function Header() {
         </Link>
 
         {/* Nav */}
-        <nav className="hidden md:flex items-center gap-7 font-medium text-sm text-gray-700">
+        <nav className="hidden md:flex items-center gap-7 font-semibold text-sm text-slate-700">
           <Link to="/" className="hover:text-[var(--primary)] transition-colors">Điểm Đến</Link>
           <a href="/#devices" className="hover:text-[var(--primary)] transition-colors">Thiết bị tương thích</a>
           <a href="/#activation" className="hover:text-[var(--primary)] transition-colors">Cách kích hoạt</a>
-          <a href="/#faq" className="hover:text-[var(--primary)] transition-colors">Câu hỏi thường gặp</a>
-          <a href="/#reviews" className="hover:text-[var(--primary)] transition-colors">Đánh giá</a>
+          <Link to="/b2b-portal" className="flex items-center gap-1.5 text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors bg-[var(--primary)]/10 px-3 py-1.5 rounded-lg">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+            B2B Partner
+          </Link>
         </nav>
 
         {/* Right Actions */}

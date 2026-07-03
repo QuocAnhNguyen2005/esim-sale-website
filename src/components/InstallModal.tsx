@@ -9,6 +9,17 @@ interface InstallModalProps {
 export default function InstallModal({ esim, onClose }: InstallModalProps) {
   const [activeTab, setActiveTab] = useState<'qr' | 'manual'>('qr');
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [os, setOs] = useState<'ios' | 'android' | 'other'>('other');
+
+  React.useEffect(() => {
+    // Device Detection Logic
+    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+    if (/iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream) {
+      setOs('ios');
+    } else if (/android/i.test(userAgent)) {
+      setOs('android');
+    }
+  }, []);
 
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -115,11 +126,35 @@ export default function InstallModal({ esim, onClose }: InstallModalProps) {
           )}
         </div>
 
-        {/* Footer step-by-step hint */}
-        <div className="bg-gray-50 p-4 border-t border-gray-100 text-center">
-          <a href="/help/installation" className="text-sm font-medium text-indigo-600 hover:underline">
-            View detailed step-by-step guide
-          </a>
+        {/* Dynamic Footer Instructions based on OS */}
+        <div className="bg-indigo-50 p-5 border-t border-indigo-100">
+          <h4 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Hướng dẫn cài đặt {os === 'ios' ? '(iOS)' : os === 'android' ? '(Android)' : ''}
+          </h4>
+          
+          {os === 'ios' && (
+            <ul className="text-sm text-indigo-800 space-y-1 list-disc pl-5">
+              <li>Mở <strong>Cài đặt (Settings)</strong> &gt; <strong>Mạng di động (Cellular)</strong>.</li>
+              <li>Chọn <strong>Thêm eSIM (Add eSIM)</strong>.</li>
+              <li>Chọn "Sử dụng mã QR" hoặc "Nhập chi tiết thủ công".</li>
+              <li>Làm theo hướng dẫn trên màn hình.</li>
+            </ul>
+          )}
+          
+          {os === 'android' && (
+            <ul className="text-sm text-indigo-800 space-y-1 list-disc pl-5">
+              <li>Mở <strong>Cài đặt (Settings)</strong> &gt; <strong>Kết nối (Connections)</strong>.</li>
+              <li>Chọn <strong>Quản lý SIM (SIM Manager)</strong> &gt; <strong>Thêm eSIM (Add eSIM)</strong>.</li>
+              <li>Quét mã QR hoặc nhập thủ công thông tin bên trên.</li>
+            </ul>
+          )}
+
+          {os === 'other' && (
+            <p className="text-sm text-indigo-800">
+              Vui lòng xem hướng dẫn chi tiết dành riêng cho hệ điều hành của bạn trong phần Trợ giúp.
+            </p>
+          )}
         </div>
       </div>
     </div>

@@ -47,13 +47,13 @@ const reviews = [
 
 /* ── Reusable row item ── */
 const RowItem = ({ name, icon, badge }: { name: string; icon: string; badge?: string }) => (
-  <Link to={`/destination/${name.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.07)] hover:shadow-lg hover:-translate-y-1 hover:border-indigo-200 border border-gray-100 transition-all duration-300 group">
+  <Link to={`/destination/${name.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center justify-between w-full px-5 py-4 bg-white rounded-2xl shadow-sm hover-lift border border-gray-100 transition-all duration-300 group">
     <div className="flex items-center gap-3">
-      <span className="text-2xl leading-none">{icon}</span>
-      <span className="font-semibold text-gray-800 text-sm group-hover:text-[var(--primary)] transition-colors">{name}</span>
-      {badge && <span className="ml-1 px-2 py-0.5 text-[10px] font-bold text-white bg-red-500 rounded-full uppercase tracking-wider">{badge}</span>}
+      <span className="text-3xl leading-none drop-shadow-sm">{icon}</span>
+      <span className="font-bold text-slate-800 text-sm group-hover:text-[var(--primary)] transition-colors">{name}</span>
+      {badge && <span className="ml-1 px-2 py-0.5 text-[10px] font-black text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-full uppercase tracking-wider shadow-sm">{badge}</span>}
     </div>
-    <svg className="w-4 h-4 text-gray-400 group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+    <svg className="w-5 h-5 text-slate-400 group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
   </Link>
 );
 
@@ -66,7 +66,82 @@ export default function HomePage() {
       <main className="flex-grow">
 
         {/* HERO */}
-        <HeroSearch activeTab={activeTab} onTabChange={setActiveTab} />
+        <HeroSearch />
+        
+        {/* Destination Toggle */}
+        <div className="flex justify-center mt-12 mb-4">
+          <div className="bg-slate-100 p-1.5 rounded-xl flex items-center shadow-inner">
+            <button 
+              onClick={() => setActiveTab('quoc-gia')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'quoc-gia' ? 'bg-white text-[var(--primary)] shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Quốc gia nổi bật
+            </button>
+            <button 
+              onClick={() => setActiveTab('khu-vuc')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'khu-vuc' ? 'bg-white text-[var(--primary)] shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              eSIM theo Khu vực
+            </button>
+          </div>
+        </div>
+
+        {/* ── BẢN ĐỒ PHỦ SÓNG TƯƠNG TÁC (INTERACTIVE COVERAGE MAP) ── */}
+        <section className="py-20 bg-indigo-900 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+             {/* Abstract SVG Background simulating a Map Network */}
+             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                <circle cx="20%" cy="30%" r="5" fill="#fff" className="animate-ping" />
+                <circle cx="80%" cy="50%" r="4" fill="#fff" className="animate-ping" style={{ animationDelay: '1s' }} />
+                <circle cx="50%" cy="70%" r="6" fill="#fff" className="animate-ping" style={{ animationDelay: '2s' }} />
+             </svg>
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <div className="text-center mb-10">
+              <span className="bg-indigo-800 text-indigo-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block border border-indigo-700">Mới</span>
+              <h2 className="text-3xl font-extrabold mb-4">Bản đồ Phủ sóng Toàn cầu (5G / 4G)</h2>
+              <p className="text-indigo-200 max-w-2xl mx-auto">Kiểm tra vùng phủ sóng và chất lượng mạng tại bất kỳ quốc gia nào trước khi mua. Kết nối trực tiếp với hơn 200+ nhà mạng đối tác (MNOs).</p>
+            </div>
+            
+            <div className="bg-indigo-950/80 backdrop-blur-md border border-indigo-800 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-2xl">
+              <div className="flex-1 w-full relative">
+                {/* Simulated Map Visual */}
+                <div className="aspect-video bg-indigo-900/50 rounded-2xl border border-indigo-700 flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute text-indigo-500 font-bold opacity-30 text-[10rem]">🗺️</div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-950 to-transparent"></div>
+                  
+                  {/* Floating Mock Data points */}
+                  <div className="absolute top-1/4 left-1/4 bg-white/10 backdrop-blur border border-white/20 p-2 rounded-lg text-xs cursor-pointer hover:bg-white/20 transition-all hover:scale-105">
+                    <span className="font-bold text-green-400">● 5G</span> Tokyo, Nhật Bản
+                  </div>
+                  <div className="absolute bottom-1/3 right-1/4 bg-white/10 backdrop-blur border border-white/20 p-2 rounded-lg text-xs cursor-pointer hover:bg-white/20 transition-all hover:scale-105">
+                    <span className="font-bold text-green-400">● 5G</span> Seoul, Hàn Quốc
+                  </div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[var(--primary)] shadow-lg shadow-[var(--primary)]/50 p-3 rounded-xl text-sm font-bold animate-pulse cursor-pointer">
+                    📍 Nhấp để Khám phá
+                  </div>
+                </div>
+              </div>
+              <div className="md:w-1/3 flex flex-col gap-4">
+                <h3 className="text-xl font-bold">Trải nghiệm tương tác</h3>
+                <ul className="space-y-3 text-sm text-indigo-200">
+                  <li className="flex items-start gap-2"><span>🎯</span> Xem chính xác nhà mạng đối tác (Viettel, AIS, Singtel...)</li>
+                  <li className="flex items-start gap-2"><span>📶</span> Phân tích chất lượng sóng theo khu vực địa lý</li>
+                  <li className="flex items-start gap-2"><span>⚡</span> Tốc độ thực tế từ người dùng (Sắp ra mắt)</li>
+                </ul>
+                <button className="mt-4 bg-white text-indigo-900 font-bold py-3 rounded-xl hover:bg-indigo-50 transition-colors">
+                  Mở Bản Đồ Khám Phá
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── Điểm đến phổ biến ── */}
         {activeTab === 'quoc-gia' && (

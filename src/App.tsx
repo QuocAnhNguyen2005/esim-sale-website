@@ -11,6 +11,7 @@ import SettingsPage from './pages/SettingsPage';
 import ProfileMobilePage from './pages/ProfileMobilePage';
 import CountryDetailPage from './pages/CountryDetailPage';
 import FloatingDeviceChecker from './components/common/FloatingDeviceChecker';
+import B2BPortalPage from './pages/B2BPortalPage';
 
 function CoBrandingWrapper({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -53,6 +54,9 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfileMobilePage />} />
         </Route>
+
+        {/* Trang dành cho đối tác B2B (Đại lý) */}
+        <Route path="/b2b-portal" element={<B2BPortalPage />} />
 
         {/* Trang 404 */}
         <Route path="*" element={<NotFound />} />
