@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const { initWorker, addOrderToQueue } = require('./services/queueService');
+const { authenticate, authorize, auditLog } = require('./middleware/auth');
 
 const app = express();
 
@@ -77,6 +78,40 @@ app.post('/api/orders', async (req, res) => {
     console.error('Lỗi khi tiếp nhận đơn hàng:', err);
     res.status(500).json({ error: 'Lỗi hệ thống.' });
   }
+});
+
+// ==========================================
+// CÁC API YÊU CẦU BẢO MẬT (ENTERPRISE GRADE)
+// ==========================================
+
+// Ví dụ 1: API dành cho B2B Partners cấp phát eSIM tự động
+app.post('/api/b2b/provision', 
+  authenticate, 
+  authorize(['B2B_PARTNER', 'SUPER_ADMIN']), 
+  auditLog('B2B_PROVISION_ESIM', 'esim_orders'),
+  async (req, res) => {
+    // Logic cấp phát ở đây. Chỉ B2B hoặc Admin mới gọi được.
+    res.json({ message: 'Provisioning request accepted via API Key', partnerId: req.user.b2b_partner_id });
+});
+
+// Ví dụ 2: API Admin Force Retry Đơn Hàng (Chỉ SUPER_ADMIN hoặc SUPPORT)
+app.post('/api/admin/orders/:id/retry',
+  authenticate,
+  authorize(['SUPER_ADMIN', 'SUPPORT']),
+  auditLog('ADMIN_FORCE_RETRY', 'orders'),
+  async (req, res) => {
+    const orderId = req.params.id;
+    // Logic đẩy lại đơn hàng vào Queue
+    res.json({ message: `Đã đưa đơn hàng ${orderId} vào lại hàng đợi để Retry.` });
+});
+
+// Ví dụ 3: Đổi cấu hình chiết khấu cho Đại lý (Chỉ SUPER_ADMIN)
+app.put('/api/admin/b2b/:id/discount',
+  authenticate,
+  authorize(['SUPER_ADMIN', 'FINANCE']),
+  auditLog('UPDATE_DISCOUNT', 'b2b_partners'),
+  async (req, res) => {
+    res.json({ message: 'Đã cập nhật mức chiết khấu mới.' });
 });
 
 const PORT = process.env.PORT || 3000;
