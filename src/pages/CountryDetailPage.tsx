@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import CheckoutModal from '../components/CheckoutModal';
+import type { Product } from '../types/database';
 
 export default function CountryDetailPage() {
   const { countrySlug } = useParams();
@@ -15,10 +16,17 @@ export default function CountryDetailPage() {
   const countryName = countrySlug ? countrySlug.replace(/-/g, ' ') : 'Điểm đến';
 
   // Dummy product for the checkout modal
-  const dummyProduct = {
+  const dummyProduct: Product = {
     id: 'esim-1',
+    vendor_id: 'vendor-dummy',
     name: `eSIM ${countryName} ${selectedData} ${selectedDays} Ngày`,
-    price: 15.00
+    country_code: countrySlug || 'UNK',
+    data_limit_gb: selectedData === 'Không giới hạn' ? null : parseInt(selectedData) || 5,
+    duration_days: parseInt(selectedDays) || 7,
+    price: 15.00,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   const handleSelectData = useCallback((data: string) => {

@@ -2,8 +2,10 @@
   "name": "esim-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,9 +13,16 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "axios": "^1.6.7",
+    "bullmq": "^5.4.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^7.2.0",
+    "ioredis": "^5.3.2",
     "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
