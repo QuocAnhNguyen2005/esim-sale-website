@@ -5,8 +5,9 @@ import AdminDashboardView from './AdminDashboardView';
 import AdminOrderView from './AdminOrderView';
 import AdminCustomerView from './AdminCustomerView';
 import AdminCatalogView from './AdminCatalogView';
+import AdminB2BView from './AdminB2BView';
 
-type Tab = 'dashboard' | 'orders' | 'crm' | 'catalog';
+type Tab = 'dashboard' | 'orders' | 'crm' | 'catalog' | 'b2b';
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -25,6 +26,7 @@ export default function AdminDashboardPage() {
     { id: 'orders', label: 'Orders & Reconcile', icon: IconOrder, roles: ['SUPER_ADMIN', 'FINANCE', 'SUPPORT'] },
     { id: 'crm', label: 'CRM (360 View)', icon: IconUsers, roles: ['SUPER_ADMIN', 'SUPPORT'] },
     { id: 'catalog', label: 'Products & Vendor', icon: IconPackage, roles: ['SUPER_ADMIN'] },
+    { id: 'b2b', label: 'B2B Partners', icon: IconUsers, roles: ['SUPER_ADMIN'] },
   ];
 
   return (
@@ -73,6 +75,7 @@ export default function AdminDashboardPage() {
           {activeTab === 'orders' && <AdminOrderView />}
           {activeTab === 'crm' && <AdminCustomerView />}
           {activeTab === 'catalog' && <AdminCatalogView />}
+          {activeTab === 'b2b' && <AdminB2BView />}
         </div>
       </main>
     </div>
